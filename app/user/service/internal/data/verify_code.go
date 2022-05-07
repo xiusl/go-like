@@ -34,19 +34,23 @@ var verifyCodeTableSql = "-- 用户短信表\n" +
 var (
 	selectVerifyCodeSql      = "select `id`, `key`, `code`, `biz_type`, `expired_at` from verify_code where id=?"
 	selectVerifyCodeByKeySql = "select `id`, `key`, `code`, `biz_type`, `expired_at` from verify_code " +
-		"where key=? and biz_type=? and del=0 order by expired_at desc limit 1"
+		"where `key`=? and `biz_type`=? and del=0 order by expired_at desc limit 1"
 	insertVerifyCodeSql = "insert into verify_code (`key`, `code`, biz_type, expired_at) values (?,?,?,?)"
 )
 
-func scanVerifyCode(row *sql.Row) (c *biz.VerifyCode, err error) {
-	err = row.Scan(
+func scanVerifyCode(row *sql.Row) (*biz.VerifyCode, error) {
+	var c biz.VerifyCode
+	err := row.Scan(
 		&c.Id,
 		&c.Key,
 		&c.Code,
 		&c.BizType,
 		&c.ExpiredAt,
 	)
-	return
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
 }
 
 func scanInsert(res sql.Result) error {

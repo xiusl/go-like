@@ -57,7 +57,7 @@ func NewDiscovery(conf *conf.Registry) registry.Discovery {
 func NewUserClient(r registry.Discovery) userv1.UserClient {
 	conn, err := grpc.DialInsecure(
 		context.Background(),
-		grpc.WithEndpoint("discovery:///trade.user.service.grpc"),
+		grpc.WithEndpoint("discovery:///go-like.user.service.grpc"),
 		grpc.WithDiscovery(r),
 		grpc.WithMiddleware(
 			recovery.Recovery(),

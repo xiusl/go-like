@@ -37,13 +37,17 @@ var (
 	insertUserSql         = "insert into user (id, mobile, name) values (?,?,?)"
 )
 
-func scanUser(row *sql.Row) (c *biz.User, err error) {
-	err = row.Scan(
-		&c.Id,
-		&c.Mobile,
-		&c.Name,
+func scanUser(row *sql.Row) (*biz.User, error) {
+	var u biz.User
+	err := row.Scan(
+		&u.Id,
+		&u.Mobile,
+		&u.Name,
 	)
-	return
+	if err != nil {
+		return nil, err
+	}
+	return &u, nil
 }
 
 func (r *userRepo) Select(ctx context.Context, id int64) (*biz.User, error) {

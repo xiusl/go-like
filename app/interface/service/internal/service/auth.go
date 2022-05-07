@@ -31,9 +31,12 @@ func (r *authParams) valid() (msg string, ok bool) {
 	return "", true
 }
 
-func parseAuthParams(ctx *gin.Context) (p *authParams, err error) {
-	err = ctx.ShouldBindJSON(p)
-	return
+func parseAuthParams(ctx *gin.Context) (*authParams, error) {
+	var p authParams
+	if err := ctx.ShouldBindJSON(&p); err != nil {
+		return nil, err
+	}
+	return &p, nil
 }
 
 func packUser(u *biz.User, simple bool, token string) gin.H {

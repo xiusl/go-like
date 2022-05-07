@@ -9,14 +9,15 @@ server:
 data:
   database:
     driver: mysql
-    source: root:pwd@tcp(ip:host)/dbname?parseTime=True&loc=Asia%2FShanghai
+    source: root:123456@tcp(127.0.0.1:3306)/dbname?parseTime=True&loc=Asia%2FShanghai
   redis:
-    addr: ip:port
-    password: pwd
+    addr: 127.0.0.1:6379
+    password:
     db: 0
     read_timeout: 0.2s
     write_timeout: 0.2s
 
-nacos:
-  address: ip
-  port: port
+registry:
+  nacos:
+    address: 127.0.0.1
+    port: 8848

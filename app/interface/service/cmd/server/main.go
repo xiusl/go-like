@@ -7,10 +7,10 @@ import (
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
+	"github.com/go-kratos/kratos/v2/transport/http"
+	"go-like/app/interface/service/internal/conf"
 	"gopkg.in/yaml.v2"
 	"os"
-	"go-like/app/interface/service/internal/conf"
 )
 
 var (
@@ -25,10 +25,10 @@ var (
 )
 
 func init() {
-	flag.StringVar(&flagConf, "conf", "../../configs/config.yaml", "config path, eg: -conf config.yaml")
+	flag.StringVar(&flagConf, "conf", "../../configs/configs.yaml", "config path, eg: -conf configs.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.App {
+func newApp(logger log.Logger, hs *http.Server, rr registry.Registrar) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -36,7 +36,7 @@ func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.A
 		kratos.Metadata(map[string]string{}),
 		kratos.Logger(logger),
 		kratos.Server(
-			gs,
+			hs,
 		),
 		kratos.Registrar(rr),
 	)
@@ -44,12 +44,14 @@ func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.A
 
 func main() {
 	flag.Parse()
+
+	//logger := kzap.NewLogger(zap.NewExample())
 	logger := log.With(log.NewStdLogger(os.Stdout),
 		"ts", log.DefaultTimestamp,
 		"caller", log.DefaultCaller,
-		"service.id", id,
-		"service.name", Name,
-		"service.version", Version,
+		//"service.id", id,
+		//"service.name", Name,
+		//"service.version", Version,
 	)
 
 	c := config.New(
@@ -59,6 +61,7 @@ func main() {
 		config.WithDecoder(func(kv *config.KeyValue, v map[string]interface{}) error {
 			return yaml.Unmarshal(kv.Value, v)
 		}),
+		config.WithLogger(logger),
 	)
 	if err := c.Load(); err != nil {
 		panic(err)
@@ -69,7 +72,7 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := initApp(bc.Server, bc.Data, bc.Register, logger)
+	app, cleanup, err := initApp(bc.Server, bc.Data, bc.Registry, logger)
 	if err != nil {
 		panic(err)
 	}

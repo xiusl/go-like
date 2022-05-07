@@ -1,0 +1,22 @@
+server:
+  grpc:
+    addr: 0.0.0.0:9001
+    timeout: 1s
+  http:
+    addr: 0.0.0.0:9000
+    timeout: 1s
+
+data:
+  database:
+    driver: mysql
+    source: root:pwd@tcp(ip:host)/dbname?parseTime=True&loc=Asia%2FShanghai
+  redis:
+    addr: ip:port
+    password: pwd
+    db: 0
+    read_timeout: 0.2s
+    write_timeout: 0.2s
+
+nacos:
+  address: ip
+  port: port

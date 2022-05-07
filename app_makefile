@@ -1,0 +1,54 @@
+VERSION=$(shell git describe --tags --always)
+APP_RELATIVE_PATH=$(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` && echo $$b/$$a)
+API_PROTO_FILES=$(shell cd ../../../api/$(APP_RELATIVE_PATH) && find . -name *.proto)
+INTERNAL_PROTO_FILES=$(shell find internal -name *.proto)
+APP_NAME=$(shell echo $(APP_RELATIVE_PATH) | sed -En "s/\//-/p")
+DOCKER_IMAGE=$(shell echo $(APP_NAME) |awk -F '@' '{print "szbb/trade-" $$0 ":0.0.1"}')
+
+.PHONY: grpc
+# generate grpc code
+grpc:
+	 cd ../../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
+           --proto_path=../../../third_party \
+           --go_out=paths=source_relative:. \
+           --go-grpc_out=paths=source_relative:. \
+           $(API_PROTO_FILES)
+
+.PHONY: http
+# generate http code
+http:
+	cd ../../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
+           --proto_path=../../../third_party \
+           --go_out=paths=source_relative:. \
+           --go-http_out=paths=source_relative:. \
+           $(API_PROTO_FILES)
+
+
+.PHONY: proto
+# generate internal proto struct
+proto:
+	protoc --proto_path=. \
+           --proto_path=../../../third_party \
+           --go_out=paths=source_relative:. \
+           $(INTERNAL_PROTO_FILES)
+
+
+
+.PHONY: errors
+# generate proto error
+errors:
+	cd ../../../api/$(APP_RELATIVE_PATH) && protoc --proto_path=. \
+           --proto_path=../../../third_party \
+           --go_out=paths=source_relative:. \
+           --go-errors_out=paths=source_relative:. \
+           $(API_PROTO_FILES)
+
+.PHONY: build
+# build
+build:
+	mkdir -p bin/ && go build -ldflags "-X main.Version=$(VERSION)" -o ./bin/ ./...
+
+
+.PHONY: docker
+docker:
+	cd ../../.. && docker build -f deploy/build/Dockerfile --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .

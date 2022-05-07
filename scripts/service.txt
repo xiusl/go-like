@@ -1,0 +1,22 @@
+package service
+
+import (
+    "github.com/gin-gonic/gin"
+    "github.com/go-kratos/kratos/v2/log"
+    "github.com/google/wire"
+    v1 "{project}/api/{module}/service/v1"
+)
+
+var ProviderSet = wire.NewSet(New{Module}Service)
+
+func New{Module}Service(logger log.Logger) *{Module}Service {
+	return &{Module}Service{
+		log:          log.NewHelper(log.With(logger, "module", "{module}/service")),
+	}
+}
+
+type {Module}Service struct {
+    v1.UnimplementedUserServer
+    *gin.Engine
+    log *log.Helper
+}

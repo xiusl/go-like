@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package article.service.v1;
+
+option go_package = "api/article/service/v1;v1";
+
+service Article {
+  rpc publishArticle(PublishArticleReq) returns (ArticleInfoReply) {}
+  rpc getArticle(ArticleIdReq) returns (ArticleInfoReply) {}
+  rpc listArticles(PageReq) returns (ArticleInfosReply) {}
+}
+
+message ArticleInfo {
+  int64 id = 1;
+  string title = 2;
+  string url = 3;
+  int64 user_id = 4;
+  string images = 5;
+  string content = 6;
+  int64 created_at = 7;
+}
+
+message PublishArticleReq { string title = 1; string url = 2; string content = 3; string images = 4; int64 user_id = 5;}
+message ArticleIdReq { int64 id = 1; }
+message ArticleInfoReply { ArticleInfo article = 1; }
+message ArticleInfosReply { repeated ArticleInfo articles = 1; }
+message PageReq { int64 cursor = 1; int64 count = 2; bool direction = 3; }

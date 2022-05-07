@@ -45,7 +45,7 @@ def gen_configs():
     path = app_path + 'configs'
     check_path(path)
 
-    file = '/configs.yaml'
+    file = '/config.yaml'
     with open(path+file, "w") as f:
         f.write(read_template('configs.txt'))
 

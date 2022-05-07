@@ -57,6 +57,13 @@ def gen_biz():
     with open(path+file, "w") as f:
         f.write("package biz\n\nimport \"github.com/google/wire\"\n\nvar ProviderSet = wire.NewSet()")
 
+def gen_data():
+    path = internal_path + 'data'
+    check_path(path)
+
+    file = '/data.go'
+    with open(path+file, "w") as f:
+        f.write("package data\n\nimport \"github.com/google/wire\"\n\nvar ProviderSet = wire.NewSet()")
 
 def gen_conf():
     path = internal_path + 'conf'
@@ -104,6 +111,7 @@ def gen_proj():
     gen_main()
     gen_configs()
     gen_biz()
+    gen_data()
     gen_conf()
     gen_server()
     gen_service()

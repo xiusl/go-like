@@ -16,7 +16,7 @@ func New{Module}Service(logger log.Logger) *{Module}Service {
 }
 
 type {Module}Service struct {
-    v1.UnimplementedUserServer
+    v1.Unimplemented{Module}Server
     *gin.Engine
     log *log.Helper
 }

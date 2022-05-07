@@ -25,7 +25,7 @@ def check_path(path):
 
 def read_template(file):
     temp = ""
-    with open(file, 'r') as f:
+    with open('templates/'+file, 'r') as f:
         temp = f.read()
         temp = temp.replace("{project}", project)
         temp = temp.replace("{module}", module)

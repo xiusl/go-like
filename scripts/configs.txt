@@ -17,7 +17,7 @@ data:
     read_timeout: 0.2s
     write_timeout: 0.2s
 
-registry:
+register:
   nacos:
     address: 127.0.0.1
     port: 8848

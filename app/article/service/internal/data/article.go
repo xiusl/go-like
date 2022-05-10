@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"go-like/app/article/service/internal/biz"
 	"strings"
@@ -44,4 +45,26 @@ func (r *articleRepo) Insert(ctx context.Context, art *biz.Article) (int64, erro
 		return 0, errors.New("插入文章失败")
 	}
 	return art.Id, nil
+}
+
+// Select is .
+func (r *articleRepo) Select(ctx context.Context, id int64) (*biz.Article, error) {
+	row := r.data.db.QueryRowContext(ctx, selectArticleSql, id)
+	return scanArticle(row)
+}
+
+func scanArticle(row *sql.Row) (*biz.Article, error) {
+	var a biz.Article
+	err := row.Scan(
+		&a.Id,
+		&a.Title,
+		&a.Content,
+		&a.Url,
+		&a.Images,
+		&a.UserId,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &a, nil
 }

@@ -2,13 +2,14 @@ package data
 
 import (
 	"database/sql"
+	"go-like/app/article/service/internal/conf"
+
 	"github.com/bwmarrin/snowflake"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
-	"go-like/app/article/service/internal/conf"
 )
 
-var ProviderSet = wire.NewSet(NewData)
+var ProviderSet = wire.NewSet(NewData, NewArticleRepo)
 
 // Data is .
 type Data struct {

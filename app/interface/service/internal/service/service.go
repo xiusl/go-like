@@ -15,22 +15,27 @@ type InterfaceService struct {
 	log    *log.Helper
 	authUc *biz.AuthUseCase
 	userUc *biz.UserUseCase
+	artUc  *biz.ArticleUseCase
 }
 
 func NewInterfaceService(
 	logger log.Logger,
 	authUc *biz.AuthUseCase,
 	userUc *biz.UserUseCase,
+	artUc *biz.ArticleUseCase,
 ) *InterfaceService {
 
 	engine := gin.New()
-	engine.Use(xgin.Logger(logger), gin.CustomRecovery(xgin.XRecoveryHandler()))
+	engine.Use(xgin.Logger(logger))
+	engine.Use(gin.CustomRecovery(xgin.XRecoveryHandler()))
+	engine.Use(xgin.UserMiddleware())
 
 	srv := &InterfaceService{
 		Engine: engine,
 		log:    log.NewHelper(log.With(logger, "module", "interface/service")),
 		authUc: authUc,
 		userUc: userUc,
+		artUc:  artUc,
 	}
 	srv.mapper()
 	return srv
@@ -42,6 +47,8 @@ func (srv *InterfaceService) mapper() {
 	srv.mapAuth()
 	srv.mapUser()
 	srv.mapVerifyCode()
+
+	srv.mapArticle()
 }
 
 func (srv *InterfaceService) pong(ctx *gin.Context) (interface{}, string, int) {

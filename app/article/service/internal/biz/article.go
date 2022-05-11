@@ -17,7 +17,7 @@ type Article struct {
 	Title     string
 	Url       string
 	Content   string
-	Images    []string
+	Images    string
 	UserId    int64
 	CreatedAt time.Time
 }

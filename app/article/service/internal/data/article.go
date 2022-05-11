@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"go-like/app/article/service/internal/biz"
-	"strings"
 )
 
 var articleTableSql = ""
@@ -30,10 +29,9 @@ func NewArticleRepo(data *Data) biz.ArticleRepo {
 
 // Insert is .
 func (r *articleRepo) Insert(ctx context.Context, art *biz.Article) (int64, error) {
-	images := strings.Join(art.Images, ",")
 	art.Id = r.data.GenerateID()
 	res, err := r.data.db.ExecContext(ctx, insertArticleSql, art.Id, art.Title,
-		art.Content, art.Url, images, art.UserId)
+		art.Content, art.Url, art.Images, art.UserId)
 	if err != nil {
 		return 0, err
 	}

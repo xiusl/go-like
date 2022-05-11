@@ -20,3 +20,7 @@ func NewAuthUseCase(repo UserRepo, logger log.Logger) *AuthUseCase {
 func (uc *AuthUseCase) Auth(ctx context.Context, mobile, verifyCode string) (*User, string, error) {
 	return uc.repo.Auth(ctx, mobile, verifyCode)
 }
+
+func (uc *AuthUseCase) VerifyToken(ctx context.Context, token string) (int64, error) {
+	return uc.repo.VerifyToken(ctx, token)
+}

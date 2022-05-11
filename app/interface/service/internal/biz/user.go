@@ -7,6 +7,7 @@ import (
 
 type UserRepo interface {
 	Auth(ctx context.Context, mobile, verifyCode string) (*User, string, error)
+	VerifyToken(ctx context.Context, token string) (int64, error)
 	GetUser(ctx context.Context, id int64) (*User, error)
 	SendVerifyCode(ctx context.Context, key string, bizType int64) error
 }

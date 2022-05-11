@@ -41,3 +41,11 @@ func (uc *UserUseCase) SendVerifyCode(ctx context.Context, key string, bizType i
 		ExpiredAt: time.Now().Add(time.Minute * 10),
 	})
 }
+
+func (uc *UserUseCase) GetUser(ctx context.Context, uid int64) (*User, error) {
+	u, err := uc.repo.Select(ctx, uid)
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
+}

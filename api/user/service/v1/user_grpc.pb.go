@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
 	Auth(ctx context.Context, in *AuthReq, opts ...grpc.CallOption) (*AuthReply, error)
+	VerifyToken(ctx context.Context, in *VerifyTokenReq, opts ...grpc.CallOption) (*VerifyTokenReply, error)
 	SendVerifyCode(ctx context.Context, in *SendVerifyCodeReq, opts ...grpc.CallOption) (*BoolReply, error)
 	GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserReply, error)
 }
@@ -38,6 +39,15 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 func (c *userClient) Auth(ctx context.Context, in *AuthReq, opts ...grpc.CallOption) (*AuthReply, error) {
 	out := new(AuthReply)
 	err := c.cc.Invoke(ctx, "/user.service.v1.User/auth", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) VerifyToken(ctx context.Context, in *VerifyTokenReq, opts ...grpc.CallOption) (*VerifyTokenReply, error) {
+	out := new(VerifyTokenReply)
+	err := c.cc.Invoke(ctx, "/user.service.v1.User/verifyToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -67,6 +77,7 @@ func (c *userClient) GetUser(ctx context.Context, in *GetUserReq, opts ...grpc.C
 // for forward compatibility
 type UserServer interface {
 	Auth(context.Context, *AuthReq) (*AuthReply, error)
+	VerifyToken(context.Context, *VerifyTokenReq) (*VerifyTokenReply, error)
 	SendVerifyCode(context.Context, *SendVerifyCodeReq) (*BoolReply, error)
 	GetUser(context.Context, *GetUserReq) (*GetUserReply, error)
 	mustEmbedUnimplementedUserServer()
@@ -78,6 +89,9 @@ type UnimplementedUserServer struct {
 
 func (UnimplementedUserServer) Auth(context.Context, *AuthReq) (*AuthReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Auth not implemented")
+}
+func (UnimplementedUserServer) VerifyToken(context.Context, *VerifyTokenReq) (*VerifyTokenReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyToken not implemented")
 }
 func (UnimplementedUserServer) SendVerifyCode(context.Context, *SendVerifyCodeReq) (*BoolReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendVerifyCode not implemented")
@@ -112,6 +126,24 @@ func _User_Auth_Handler(srv interface{}, ctx context.Context, dec func(interface
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).Auth(ctx, req.(*AuthReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_VerifyToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyTokenReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).VerifyToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user.service.v1.User/verifyToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).VerifyToken(ctx, req.(*VerifyTokenReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -162,6 +194,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "auth",
 			Handler:    _User_Auth_Handler,
+		},
+		{
+			MethodName: "verifyToken",
+			Handler:    _User_VerifyToken_Handler,
 		},
 		{
 			MethodName: "sendVerifyCode",

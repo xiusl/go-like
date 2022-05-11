@@ -52,3 +52,14 @@ func (uc *AuthUseCase) Auth(ctx context.Context, mobile, code string) (*User, st
 	token := security.GenerateToken(u.Id, "")
 	return u, token, nil
 }
+
+func (uc *AuthUseCase) VerifyToken(ctx context.Context, token string) (int64, error) {
+	uid, sign, msg, err := security.ParseToken(token)
+	if err != nil {
+		return 0, err
+	}
+	if err := security.VerifyTokenSign(sign, msg, ""); err != nil {
+		return 0, err
+	}
+	return uid, nil
+}

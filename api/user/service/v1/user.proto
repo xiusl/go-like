@@ -6,6 +6,7 @@ option go_package = "api/user/service/v1;v1";
 
 service User {
   rpc auth(AuthReq) returns (AuthReply) {}
+  rpc verifyToken(verifyTokenReq) returns (verifyTokenReply) {}
   rpc sendVerifyCode(SendVerifyCodeReq) returns (BoolReply) {}
   rpc getUser(GetUserReq) returns (GetUserReply) {}
 }
@@ -20,6 +21,8 @@ message BoolReply { bool success = 1; }
 
 message AuthReq { string mobile = 1; string code = 2;}
 message AuthReply { UserInfo user = 1; string token = 2; }
+message verifyTokenReq { string token = 1; }
+message verifyTokenReply { int64 user_id = 1; }
 message SendVerifyCodeReq { string key = 1; int64 biz_type = 2; }
 message GetUserReq { int64 id = 1; }
 message GetUserReply { UserInfo user = 1; }

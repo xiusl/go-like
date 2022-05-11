@@ -7,6 +7,8 @@ import (
 	"github.com/bwmarrin/snowflake"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var ProviderSet = wire.NewSet(NewData, NewArticleRepo)

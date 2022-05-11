@@ -68,6 +68,5 @@ func (srv *InterfaceService) auth(ctx *gin.Context) (interface{}, string, int) {
 }
 
 func (srv *InterfaceService) VerifyToken(ctx context.Context, token string) (int64, error) {
-	srv.log.Debugf("verify token")
-	return 0, nil
+	return srv.authUc.VerifyToken(ctx, token)
 }

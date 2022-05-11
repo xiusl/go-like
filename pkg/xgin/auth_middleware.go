@@ -15,6 +15,19 @@ func unAuth(ctx *gin.Context) {
 	ctx.AbortWithStatusJSON(200, result(nil, "请登录", 403))
 }
 
+func UserMiddleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		authorizationHeader := ctx.GetHeader(security.AuthorizationHeaderKey)
+		if len(authorizationHeader) > 0 &&
+			strings.Contains(authorizationHeader, "Bearer ") {
+			token := strings.Replace(authorizationHeader, "Bearer ", "", 1)
+			uid, _, _, _ := security.ParseToken(token)
+			ctx.Set(security.ContextUserKey, uid)
+		}
+		ctx.Next()
+	}
+}
+
 func AuthMiddleware(as AuthServer) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authorizationHeader := ctx.GetHeader(security.AuthorizationHeaderKey)
@@ -38,5 +51,10 @@ func AuthMiddleware(as AuthServer) gin.HandlerFunc {
 }
 
 func GetCurrentUid(ctx *gin.Context) int64 {
-	return ctx.MustGet(security.ContextUserKey).(int64)
+	if v, ex := ctx.Get(security.ContextUserKey); ex {
+		if id, ok := v.(int64); ok {
+			return id
+		}
+	}
+	return 0
 }

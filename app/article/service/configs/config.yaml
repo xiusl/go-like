@@ -1,15 +1,12 @@
 server:
   grpc:
-    addr: 0.0.0.0:9001
-    timeout: 1s
-  http:
-    addr: 0.0.0.0:9000
+    addr: 0.0.0.0:9003
     timeout: 1s
 
 data:
   database:
     driver: mysql
-    source: root:123456@tcp(127.0.0.1:3306)/like_article?parseTime=True&loc=Asia%2FShanghai
+    source: root:Trade110@tcp(127.0.0.1:3306)/like_article?parseTime=True&loc=Asia%2FShanghai
   redis:
     addr: 127.0.0.1:6379
     password:

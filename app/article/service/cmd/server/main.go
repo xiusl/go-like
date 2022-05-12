@@ -8,9 +8,9 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	"go-like/app/article/service/internal/conf"
 	"gopkg.in/yaml.v2"
 	"os"
-	"go-like/app/article/service/internal/conf"
 )
 
 var (

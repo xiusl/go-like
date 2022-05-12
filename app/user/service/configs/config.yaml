@@ -9,7 +9,7 @@ server:
 data:
   database:
     driver: mysql
-    source: root:123456@tcp(127.0.0.1:3306)/like_user?parseTime=True&loc=Asia%2FShanghai
+    source: root:Trade110@tcp(127.0.0.1:3306)/like_user?parseTime=True&loc=Asia%2FShanghai
   redis:
     addr: 127.0.0.1:6379
     password:

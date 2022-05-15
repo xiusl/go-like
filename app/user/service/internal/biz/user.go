@@ -10,17 +10,22 @@ type UserRepo interface {
 	Select(ctx context.Context, id int64) (*User, error)
 	SelectByMobile(ctx context.Context, mobile string) (*User, error)
 	Insert(ctx context.Context, u *User) (int64, error)
+	UpdateFollowerCount(ctx context.Context, uid int64, count int64) error
+	ListByIds(ctx context.Context, ids []int64) ([]*User, error)
+	MapByIds(ctx context.Context, ids []int64) (map[int64]*User, error)
 }
 
 type User struct {
-	Id     int64
-	Name   string
-	Mobile string
+	Id            int64
+	Name          string
+	Mobile        string
+	FollowerCount int64
 }
 
 type UserUseCase struct {
 	repo   UserRepo
 	vcRepo VerifyCodeRepo
+	fRepo  FollowerRepo
 	log    *log.Helper
 }
 

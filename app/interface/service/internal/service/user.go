@@ -6,12 +6,18 @@ import (
 )
 
 func (srv *InterfaceService) mapUser() {
-	user := srv.Group("/user")
+	user := srv.Group("/users")
 	user.Use(xgin.AuthMiddleware(srv))
 	{
 		xgin.POST(user, "", srv.user)
 		xgin.GET(user, "/auth", srv.userAuth)
 		xgin.POST(user, "/password", srv.userPassword)
+	}
+
+	{
+		xgin.PUT(user, "/following/:id", srv.followingUser)
+		xgin.GET(user, "/:id/followers", srv.userFollowers)
+		xgin.GET(user, "/:id/followings", srv.userFollowings)
 	}
 }
 

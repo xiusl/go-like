@@ -9,14 +9,26 @@ service User {
   rpc verifyToken(verifyTokenReq) returns (verifyTokenReply) {}
   rpc sendVerifyCode(SendVerifyCodeReq) returns (BoolReply) {}
   rpc getUser(GetUserReq) returns (GetUserReply) {}
+
+  rpc followingUser(FollowingUserReq) returns (BoolReply) {}
+  rpc getFollowings(UserIdPageReq) returns (UsersReq) {}
+  rpc getFollowers(UserIdPageReq) returns (UsersReq) {}
 }
 
 message UserInfo {
   int64 id = 1;
   string name = 2;
   string mobile = 3;
+  string avatar = 4;
+  int64 follower_count = 5;
+  int64 following_count = 6;
+  bool is_followed = 7;
+  bool is_following = 8;
 }
 message BoolReply { bool success = 1; }
+message PageReq { int64 page = 1; int64 count = 2;}
+message UsersReq { repeated UserInfo users = 1; }
+message UserIdPageReq { int64 uid = 1; PageReq page = 2; }
 
 
 message AuthReq { string mobile = 1; string code = 2;}
@@ -26,3 +38,4 @@ message verifyTokenReply { int64 user_id = 1; }
 message SendVerifyCodeReq { string key = 1; int64 biz_type = 2; }
 message GetUserReq { int64 id = 1; }
 message GetUserReply { UserInfo user = 1; }
+message FollowingUserReq { int64 user = 1; int64 following = 2; }

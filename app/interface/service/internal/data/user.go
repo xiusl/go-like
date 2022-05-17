@@ -21,9 +21,12 @@ func parseGrpcUser(user *v1.UserInfo) *biz.User {
 		return nil
 	}
 	return &biz.User{
-		Id:     user.Id,
-		Name:   user.Name,
-		Mobile: user.Mobile,
+		Id:          user.Id,
+		Name:        user.Name,
+		Mobile:      user.Mobile,
+		Avatar:      user.Avatar,
+		IsFollowing: user.IsFollowing,
+		IsFollowed:  user.IsFollowed,
 	}
 }
 
@@ -57,4 +60,51 @@ func (u *userRepo) SendVerifyCode(ctx context.Context, key string, bizType int64
 		return err
 	}
 	return nil
+}
+
+func (u *userRepo) FollowingUser(ctx context.Context, authUser, id int64) error {
+	_, err := u.data.uc.FollowingUser(ctx, &v1.FollowingUserReq{
+		User:      authUser,
+		Following: id,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *userRepo) GetFollowings(ctx context.Context, uid int64) ([]*biz.User, error) {
+	rep, err := u.data.uc.GetFollowings(ctx, &v1.UserIdPageReq{
+		Uid: uid,
+		Page: &v1.PageReq{
+			Page:  1,
+			Count: 10,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	us := make([]*biz.User, 0)
+	for _, rpcUser := range rep.Users {
+		us = append(us, parseGrpcUser(rpcUser))
+	}
+	return us, nil
+}
+
+func (u *userRepo) GetFollowers(ctx context.Context, uid int64) ([]*biz.User, error) {
+	rep, err := u.data.uc.GetFollowers(ctx, &v1.UserIdPageReq{
+		Uid: uid,
+		Page: &v1.PageReq{
+			Page:  1,
+			Count: 10,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	us := make([]*biz.User, 0)
+	for _, rpcUser := range rep.Users {
+		us = append(us, parseGrpcUser(rpcUser))
+	}
+	return us, nil
 }

@@ -14,7 +14,8 @@ import (
 var ProviderSet = wire.NewSet(
 	NewData,
 	NewUserRepo,
-	NewVerifyCodeRepo)
+	NewVerifyCodeRepo,
+	NewFollowerRepo)
 
 type Data struct {
 	db   *sql.DB

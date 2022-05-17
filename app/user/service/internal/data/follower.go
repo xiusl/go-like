@@ -5,15 +5,16 @@ import (
 	"database/sql"
 	"fmt"
 	"go-like/app/user/service/internal/biz"
+	"strconv"
 )
 
 var (
 	insertFollowerSql = "insert into user_follower (`user`, `follower`) value(?, ?)"
-	pageFollowerSql   = "select `user`, `follower`, `created_at`, `updated_at` from user_follower " +
+	pageFollowerSql   = "select `user`, `follower`, `created_at` from user_follower " +
 		"where user=? order by created_at desc limit ?, ?"
-	pageFollowingSql = "select `id`, `user`, `follower`, `created_at`, `updated_at` from user_follower " +
+	pageFollowingSql = "select `id`, `user`, `follower`, `created_at` from user_follower " +
 		"where follower=? order by created_at desc limit ?, ?"
-	listFollowingSql = "select `id`, `user`, `follower`, `created_at`, `updated_at` from user_follower " +
+	listFollowingSql = "select `id`, `user`, `follower`, `created_at` from user_follower " +
 		"where follower=? order by created_at desc"
 	deleteFollowingSql = "delete from user_follower where user=? and follower=?"
 )
@@ -81,6 +82,40 @@ func (r *followerRepo) Tx(ctx context.Context, userRepo biz.UserRepo, f func(ctx
 		return err
 	}
 	return nil
+}
+
+func (r *followerRepo) GetFollowing(ctx context.Context, uid int64) ([]int64, error) {
+	key := fmt.Sprintf("user:following:%d", uid)
+	if r.data.rdb.Exists(ctx, key).Val() == 1 {
+		cmd := r.data.rdb.SMembers(ctx, key)
+		res, err := cmd.Result()
+		if err != nil {
+			return nil, err
+		}
+		ids := make([]int64, len(res))
+		for i, str := range res {
+			id, err := strconv.ParseInt(str, 10, 64)
+			if err != nil {
+				return nil, err
+			}
+			ids[i] = id
+		}
+		return ids, nil
+	}
+	rows, err := r.data.db.QueryContext(ctx, listFollowingSql, uid)
+	if err != nil {
+		return nil, err
+	}
+	res, err := scanUserFollowers(rows)
+	if err != nil {
+		return nil, err
+	}
+	ids := make([]int64, len(res))
+	for i, uf := range res {
+		ids[i] = uf.UserId
+	}
+	r.data.rdb.SAdd(ctx, key, ids)
+	return ids, nil
 }
 
 func scanUserFollowers(rows *sql.Rows) ([]*biz.UserFollower, error) {

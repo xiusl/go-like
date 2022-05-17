@@ -16,10 +16,14 @@ type UserRepo interface {
 }
 
 type User struct {
-	Id            int64
-	Name          string
-	Mobile        string
-	FollowerCount int64
+	Id             int64
+	Name           string
+	Mobile         string
+	Avatar         string
+	FollowerCount  int64
+	FollowingCount int64
+	IsFollowed     bool
+	IsFollowing    bool
 }
 
 type UserUseCase struct {
@@ -29,10 +33,11 @@ type UserUseCase struct {
 	log    *log.Helper
 }
 
-func NewUserUseCase(repo UserRepo, vcRepo VerifyCodeRepo, logger log.Logger) *UserUseCase {
+func NewUserUseCase(repo UserRepo, vcRepo VerifyCodeRepo, fRepo FollowerRepo, logger log.Logger) *UserUseCase {
 	return &UserUseCase{
 		repo:   repo,
 		vcRepo: vcRepo,
+		fRepo:  fRepo,
 		log:    log.NewHelper(logger),
 	}
 }

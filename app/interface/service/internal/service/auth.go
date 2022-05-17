@@ -46,13 +46,24 @@ func packUser(u *biz.User, simple bool, token string) gin.H {
 	}
 	r["id"] = u.Id
 	r["name"] = u.Name
+	r["avatar"] = u.Avatar
 	if !simple {
 		r["mobile"] = u.Mobile
 	}
 	if len(token) > 0 {
 		r["token"] = token
 	}
+	r["followed"] = u.IsFollowed
+	r["following"] = u.IsFollowing
 	return r
+}
+
+func packUsers(us []*biz.User, simple bool) []gin.H {
+	res := make([]gin.H, len(us))
+	for i, u := range us {
+		res[i] = packUser(u, simple, "")
+	}
+	return res
 }
 
 func (srv *InterfaceService) auth(ctx *gin.Context) (interface{}, string, int) {

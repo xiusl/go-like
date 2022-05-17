@@ -101,6 +101,9 @@ func (r *userRepo) UpdateFollowerCount(ctx context.Context, uid int64, count int
 }
 
 func (r *userRepo) ListByIds(ctx context.Context, ids []int64) ([]*biz.User, error) {
+	if len(ids) == 0 {
+		return make([]*biz.User, 0), nil
+	}
 	sql := fmt.Sprintf(listUserByIdsSql, xsql.IdsToStr(ids))
 	rows, err := r.data.db.QueryContext(ctx, sql)
 	if err != nil {

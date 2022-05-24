@@ -21,3 +21,7 @@ register:
   nacos:
     address: 127.0.0.1
     port: 8848
+
+logger:
+  mode: prod
+  path: logs/user.log

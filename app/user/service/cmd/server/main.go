@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -9,6 +10,7 @@ import (
 	"github.com/go-kratos/kratos/v2/registry"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"go-like/app/user/service/internal/conf"
+	"go-like/pkg/xlog"
 	"gopkg.in/yaml.v2"
 	"os"
 )
@@ -44,13 +46,13 @@ func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.A
 
 func main() {
 	flag.Parse()
-	logger := log.With(log.NewStdLogger(os.Stdout),
-		"ts", log.DefaultTimestamp,
-		"caller", log.DefaultCaller,
-		"service.id", id,
-		"service.name", Name,
-		"service.version", Version,
-	)
+	//logger := log.With(log.NewStdLogger(os.Stdout),
+	//	"ts", log.DefaultTimestamp,
+	//	"caller", log.DefaultCaller,
+	//	"service.id", id,
+	//	"service.name", Name,
+	//	"service.version", Version,
+	//)
 
 	c := config.New(
 		config.WithSource(
@@ -68,6 +70,9 @@ func main() {
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
+
+	fmt.Println("bc.data =>", bc.Logger)
+	logger := xlog.Logger(bc.Logger.Mode, bc.Logger.Path)
 
 	app, cleanup, err := initApp(bc.Server, bc.Data, bc.Register, logger)
 	if err != nil {

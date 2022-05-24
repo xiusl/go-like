@@ -10,6 +10,7 @@ message Bootstrap {
   Server server = 1;
   Data data = 2;
   Registry register = 3;
+  Logger logger = 4;
 }
 
 message Server {
@@ -49,4 +50,9 @@ message Registry {
     uint64 port = 2;
   }
   Nacos nacos = 1;
+}
+
+message Logger {
+  string mode = 1;
+  string path = 2;
 }
